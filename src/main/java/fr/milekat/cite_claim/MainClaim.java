@@ -51,7 +51,6 @@ public class MainClaim extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable(){
-        mainClaim.saveConfig();
         regionsEngine.cancel();
     }
 
