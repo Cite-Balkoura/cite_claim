@@ -1,0 +1,25 @@
+name: Cite-claim
+author: MileKat
+main: fr.milekat.cite_claim.MainClaim
+version: '1.0'
+api-version: '1.15'
+description: plugin cite au émeraudes par MileKat, gestion du monde
+depend: [Cite-core]
+commands:
+  build:
+    usage: "/build"
+    permission: modo.claim.command.build
+    permission-message: "&cVous n'avez pas la permission d'utiliser cette commande."
+    description: "Commande pour passer en Build-Mode"
+    aliases:
+      - buildmode
+  rg-reload:
+    usage: "/rg-reload"
+    permission: modo.claim.command.reload
+    permission-message: "&cVous n'avez pas la permission d'utiliser cette commande."
+    description: "Commande pour reload toutes les pos des régions."
+  region:
+    usage: "/region"
+    permission: modo.claim.command.region
+    permission-message: "&cVous n'avez pas la permission d'utiliser cette commande."
+    description: "Commande gérer les régions."
