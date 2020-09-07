@@ -95,7 +95,7 @@ public class RegionMarket implements Listener {
      *      Mise à jour de l'argent de l'équipe & de l'équipe titulaire de la région
      */
     private void updateTranscation(Team team, Region region) {
-        Connection connection = MainCore.sql.getConnection();
+        Connection connection = MainCore.getSQL().getConnection();
         try {
             PreparedStatement q = connection.prepareStatement("UPDATE `" + MainCore.SQLPREFIX +
                     "regions` SET `team_id` = ? WHERE `rg_id` = ?;" +

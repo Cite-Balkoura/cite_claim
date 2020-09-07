@@ -5,7 +5,7 @@ import fr.milekat.cite_claim.events.RegionMarket;
 import fr.milekat.cite_claim.obj.Region;
 import fr.milekat.cite_core.MainCore;
 import fr.milekat.cite_core.core.obj.Team;
-import fr.milekat.cite_core.utils_tools.LocToString;
+import fr.milekat.cite_libs.utils_tools.LocToString;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -21,7 +21,7 @@ public class RegionsTask {
         return new BukkitRunnable() {
             @Override
             public void run() {
-                Connection connection = MainCore.sql.getConnection();
+                Connection connection = MainCore.getSQL().getConnection();
                 try {
                     PreparedStatement q = connection.prepareStatement("SELECT `rg_id`, `rg_name`, `rg_type`, `rg_sign`, " +
                             "`rg_prix`, `team_id` FROM `" + MainCore.SQLPREFIX + "regions`;");

@@ -78,7 +78,7 @@ public class CommandsRegion implements CommandExecutor {
      *      Ajout d'une région dans la base SQL
      */
     private void newRegion(CommandSender sender, String name, int prix) {
-        Connection connection = MainCore.sql.getConnection();
+        Connection connection = MainCore.getSQL().getConnection();
         try {
             PreparedStatement q = connection.prepareStatement("INSERT INTO `" + MainCore.SQLPREFIX +
                     "regions`(`rg_name`, `rg_prix`) VALUES (?,?) RETURNING `rg_id`;");
@@ -111,7 +111,7 @@ public class CommandsRegion implements CommandExecutor {
             MainClaim.regionsBlocks.put(block.getLocation(),region);
             block.setType(Material.AIR);
         }
-        Connection connection = MainCore.sql.getConnection();
+        Connection connection = MainCore.getSQL().getConnection();
         try {
             PreparedStatement q = connection.prepareStatement("UPDATE `" + MainCore.SQLPREFIX +
                     "regions` SET `rg_locs` = ? WHERE `rg_name` = ?;");
@@ -138,7 +138,7 @@ public class CommandsRegion implements CommandExecutor {
             pos.append(block.getLocation().getBlockY());
             pos.append(":");
             pos.append(block.getLocation().getBlockZ());
-            Connection connection = MainCore.sql.getConnection();
+            Connection connection = MainCore.getSQL().getConnection();
             try {
                 PreparedStatement q = connection.prepareStatement("UPDATE `" + MainCore.SQLPREFIX +
                         "regions` SET `rg_sign` = ? WHERE `rg_name` = ?;");

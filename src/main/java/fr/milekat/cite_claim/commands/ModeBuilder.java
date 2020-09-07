@@ -32,7 +32,7 @@ public class ModeBuilder implements CommandExecutor {
      * @param mode true/false
      */
     private void setBuildForP(Player p, boolean mode) {
-        Connection connection = MainCore.sql.getConnection();
+        Connection connection = MainCore.getSQL().getConnection();
         try {
             PreparedStatement q = connection.prepareStatement("UPDATE `" + MainCore.SQLPREFIX +
                     "player` SET buildon = ? WHERE `uuid` = ?;");

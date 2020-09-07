@@ -14,7 +14,7 @@ public class RegionsBlocksLoad {
      *      Injections des régions dans la hashmap
      */
     public void reloadRegions() {
-        Connection connection = MainCore.sql.getConnection();
+        Connection connection = MainCore.getSQL().getConnection();
         try {
             PreparedStatement q = connection.prepareStatement("SELECT `rg_name`, `rg_locs` FROM `" + MainCore.SQLPREFIX
                     + "regions`;");

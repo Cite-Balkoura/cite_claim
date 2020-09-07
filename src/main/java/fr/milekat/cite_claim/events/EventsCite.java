@@ -4,7 +4,7 @@ import fr.milekat.cite_claim.MainClaim;
 import fr.milekat.cite_claim.obj.Region;
 import fr.milekat.cite_claim.utils.ClaimInfo;
 import fr.milekat.cite_core.MainCore;
-import fr.milekat.cite_core.utils_tools.LocToString;
+import fr.milekat.cite_libs.utils_tools.LocToString;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -60,7 +60,7 @@ public class EventsCite implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler (ignoreCancelled = true)
     public void onClick(PlayerInteractEvent event) {
         if (event.getClickedBlock()==null || event.getHand()!=null && event.getHand().equals(EquipmentSlot.OFF_HAND)) return;
         Player player = event.getPlayer();
@@ -72,6 +72,7 @@ public class EventsCite implements Listener {
         }
         if (!event.getClickedBlock().getType().isInteractable()) return;
         if (block.getType().equals(Material.ENDER_CHEST)) return;
+        if (block.getType().equals(Material.CRAFTING_TABLE)) return;
         if (block.getBlockData() instanceof Stairs) return;
         if (block.getState() instanceof Sign) return;
         if (!ClaimInfo.canInterract(block.getLocation(), player)) {
@@ -126,7 +127,7 @@ public class EventsCite implements Listener {
     }
 
     private void addToClaim(Region region, Block block, Player player) {
-        Connection connection = MainCore.sql.getConnection();
+        Connection connection = MainCore.getSQL().getConnection();
         try {
             Location loc = block.getLocation();
             PreparedStatement q = connection.prepareStatement("UPDATE `" + MainCore.SQLPREFIX + "regions` SET" +
@@ -145,7 +146,7 @@ public class EventsCite implements Listener {
     }
 
     private void removeToClaim(Location loc, Player player) {
-        Connection connection = MainCore.sql.getConnection();
+        Connection connection = MainCore.getSQL().getConnection();
         try {
             Region region = MainClaim.regions.get(MainClaim.regionsBlocks.get(loc));
             PreparedStatement q = connection.prepareStatement("SELECT `rg_locs` FROM `" + MainCore.SQLPREFIX +

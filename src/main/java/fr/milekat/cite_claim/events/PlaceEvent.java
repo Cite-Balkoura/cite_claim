@@ -1,6 +1,6 @@
 package fr.milekat.cite_claim.events;
 
-import fr.milekat.cite_core.utils_tools.LocToString;
+import fr.milekat.cite_libs.utils_tools.LocToString;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
