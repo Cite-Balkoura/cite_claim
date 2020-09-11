@@ -52,7 +52,7 @@ public class EventsCite implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onBreak(BlockBreakEvent event) {
         if (!ClaimInfo.canBuild(event.getBlock().getLocation(), event.getPlayer())) {
             event.setCancelled(true);
@@ -117,7 +117,7 @@ public class EventsCite implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent event) {
         if (!event.getAction().equals(Action.PHYSICAL)) return;
         if (!ClaimInfo.canInterract(event.getPlayer().getLocation().getBlock().getLocation(), event.getPlayer())) {

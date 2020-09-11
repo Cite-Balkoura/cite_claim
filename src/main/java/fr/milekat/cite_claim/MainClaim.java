@@ -5,6 +5,7 @@ import fr.milekat.cite_claim.commands.ForceReloadRegions;
 import fr.milekat.cite_claim.commands.ModeBuilder;
 import fr.milekat.cite_claim.commands.TabsRegion;
 import fr.milekat.cite_claim.engines.RegionsTask;
+import fr.milekat.cite_claim.engines.SpeedBoost;
 import fr.milekat.cite_claim.events.BoundClaim;
 import fr.milekat.cite_claim.events.EventsCite;
 import fr.milekat.cite_claim.events.RegionMarket;
@@ -29,6 +30,7 @@ public class MainClaim extends JavaPlugin implements Listener {
     public static HashMap<UUID, Location> boundRegionleft = new HashMap<>();
     private static MainClaim mainClaim;
     private BukkitTask regionsEngine;
+    private BukkitTask speedEngine;
 
     @Override
     public void onEnable() {
@@ -36,6 +38,7 @@ public class MainClaim extends JavaPlugin implements Listener {
         // Reload de la map des blocks
         new RegionsBlocksLoad().reloadRegions();
         regionsEngine = new RegionsTask().runTask();
+        speedEngine = new SpeedBoost().runTask();
         // Events
         getServer().getPluginManager().registerEvents(new BoundClaim(),this);
         //getServer().getPluginManager().registerEvents(new PlaceEvent(),this);
@@ -52,6 +55,7 @@ public class MainClaim extends JavaPlugin implements Listener {
     @Override
     public void onDisable(){
         regionsEngine.cancel();
+        speedEngine.cancel();
     }
 
     public static MainClaim getInstance(){
