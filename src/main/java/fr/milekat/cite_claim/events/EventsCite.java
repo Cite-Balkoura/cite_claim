@@ -264,6 +264,16 @@ public class EventsCite implements Listener {
             event.setCancelled(true);
         } else if (!MainClaim.isBuildMods((Player) event.getEntity())) {
             event.setCancelled(true);
+            denyMsg((Player) event.getEntity());
+        }
+    }
+
+    @EventHandler
+    public void onPlayerAttack(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player) || MainClaim.isBuildMods((Player) event.getDamager())) return;
+        if (!ClaimInfo.canBuild(event.getEntity().getLocation(), (Player) event.getDamager())) {
+            event.setCancelled(true);
+            denyMsg((Player) event.getDamager());
         }
     }
 
