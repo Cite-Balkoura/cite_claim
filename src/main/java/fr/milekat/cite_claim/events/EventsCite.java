@@ -18,6 +18,7 @@ import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
@@ -29,6 +30,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.sql.Connection;
@@ -57,6 +59,14 @@ public class EventsCite implements Listener {
         if (!ClaimInfo.canBuild(event.getBlock().getLocation(), event.getPlayer())) {
             event.setCancelled(true);
             denyMsg(event.getPlayer());
+            return;
+        }
+        ItemStack itemStack = event.getPlayer().getInventory().getItemInMainHand();
+        ItemMeta itemMeta = itemStack.getItemMeta();
+        if (itemMeta!=null && itemMeta.isUnbreakable()) {
+            event.setCancelled(true);
+            event.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                    new TextComponent("§cDésolé, le Hammer ne fonctionne pas ici."));
         }
     }
 
