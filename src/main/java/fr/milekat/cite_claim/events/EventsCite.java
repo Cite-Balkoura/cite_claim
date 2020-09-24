@@ -16,6 +16,7 @@ import org.bukkit.block.data.type.Stairs;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -288,10 +289,22 @@ public class EventsCite implements Listener {
     }
 
     @EventHandler
+    public void onSpawnPotionThrow(ProjectileLaunchEvent event) {
+        if (!(event.getEntity() instanceof ThrownPotion)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
     public void onDamage(EntityDamageEvent event) {
         if (event.getEntityType() == EntityType.PLAYER) {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onSpawnPotionSplash(PotionSplashEvent event) {
+        event.setCancelled(true);
     }
 
     @EventHandler
