@@ -5,6 +5,7 @@ import fr.milekat.cite_claim.obj.Region;
 import fr.milekat.cite_claim.utils.ClaimInfo;
 import fr.milekat.cite_core.MainCore;
 import fr.milekat.cite_libs.utils_tools.LocToString;
+import net.craftersland.data.bridge.api.events.SyncCompleteEvent;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -19,7 +20,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.*;
@@ -27,9 +27,7 @@ import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -45,6 +43,27 @@ public class EventsCite implements Listener {
     private void denyMsg(Player player) {
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
                 new TextComponent("§cDésolé, vous ne pouvez pas effectuer cette action ici."));
+    }
+
+    @EventHandler
+    public void onFirstJoin(SyncCompleteEvent event) {
+        if (event.isNewPlayer()) event.getPlayer().teleport(new Location(Bukkit.getWorld("world"),-2,157,-8));
+    }
+
+    @EventHandler
+    public void onPlaceWater(PlayerBucketEmptyEvent event) {
+        if (!ClaimInfo.canBuild(event.getBlock().getLocation(), event.getPlayer())) {
+            event.setCancelled(true);
+            denyMsg(event.getPlayer());
+        }
+    }
+
+    @EventHandler
+    public void onWaterTake(PlayerBucketFillEvent event) {
+        if (!ClaimInfo.canBuild(event.getBlock().getLocation(), event.getPlayer())) {
+            event.setCancelled(true);
+            denyMsg(event.getPlayer());
+        }
     }
 
     @EventHandler
@@ -175,7 +194,7 @@ public class EventsCite implements Listener {
                     pos.append(loop);
                     pos.append(";");
                 }
-                posSQL = pos.toString().substring(0, pos.length() - 1);
+                posSQL = pos.substring(0, pos.length() - 1);
             } else {
                 posSQL = null;
             }
