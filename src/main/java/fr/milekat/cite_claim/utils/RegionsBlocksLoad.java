@@ -21,7 +21,7 @@ public class RegionsBlocksLoad {
             q.execute();
             MainClaim.regionsBlocks.clear();
             while (q.getResultSet().next()) {
-                if (!(q.getResultSet().getString("rg_locs") == null)) {
+                if (q.getResultSet().getString("rg_locs") != null) {
                     for (String loc : q.getResultSet().getString("rg_locs").split(";")) {
                         String[] xyz = loc.split(":");
                         Location location = new Location(Bukkit.getServer().getWorld("world"),
