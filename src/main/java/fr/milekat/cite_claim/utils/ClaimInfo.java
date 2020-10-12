@@ -17,32 +17,46 @@ public class ClaimInfo {
     }
 
     /**
-     *      Check si le joueur peut intéragir avec le block
+     *      Check si le joueur n'est pas dans une habitation qu'il ne possède pas
      * @param location pos du block
-     * @param p joueur
+     * @param player joueur
      * @return autorisé true/false
      */
-    public static boolean canInterract(Location location, Player p){
-        if (MainClaim.isBuildMods(p)) return true;
+    public static boolean canBeHere(Location location, Player player) {
+        if (MainClaim.isBuildMods(player)) return true;
+        Region region = getRegion(location);
+        if (region == null) return true;
+        if (region.getName().equalsIgnoreCase("interact-ok")) return true;
+        return canBuild(location,player);
+    }
+
+    /**
+     *      Check si le joueur peut intéragir avec le block
+     * @param location pos du block
+     * @param player joueur
+     * @return autorisé true/false
+     */
+    public static boolean canInterract(Location location, Player player){
+        if (MainClaim.isBuildMods(player)) return true;
         Region region = getRegion(location);
         if (region == null) return false;
         if (region.getName().equalsIgnoreCase("interact-ok")) return true;
-        return canBuild(location,p);
+        return canBuild(location,player);
     }
 
     /**
      *      Check si le joueur peut consuitre à la pos du block (==Il fait parti de l'équipe qui poscède la zone)
      * @param location pos du block
-     * @param p joueur
+     * @param player joueur
      * @return autorisé true/false
      */
-    public static boolean canBuild(Location location, Player p) {
-        if (MainClaim.isBuildMods(p)) return true;
+    public static boolean canBuild(Location location, Player player) {
+        if (MainClaim.isBuildMods(player)) return true;
         Region region = getRegion(location);
         if (region == null) return false;
         if (region.getTeam() == null) return false;
         for (Profil profil : region.getTeam().getMembers()) {
-            if (profil.getUuid().equals(p.getUniqueId())) return true;
+            if (profil.getUuid().equals(player.getUniqueId())) return true;
         }
         return false;
     }
