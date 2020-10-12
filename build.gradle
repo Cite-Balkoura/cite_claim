@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots' }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url 'http://maven.enginehub.org/repo/' }
+    maven { url = 'https://jitpack.io' }
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "fr.milekat.cite_claim.MainClaim"
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+application {
+    mainClassName = 'fr.milekat.cite_claim.MainClaim'
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.16.3-R0.1-SNAPSHOT'
+    //compileOnly group: 'net.md-5', name: 'bungeecord-chat', version: '1.16-R0.2-SNAPSHOT'
+    compileOnly group: 'com.sk89q.worldedit', name: 'worldedit-core', version: '7.2.0-SNAPSHOT'
+    compileOnly group: 'com.sk89q.worldedit', name: 'worldedit-bukkit', version: '7.2.0-SNAPSHOT'
+    compileOnly group: 'com.github.tutur1004', name:'cite_libs', version:'-SNAPSHOT'
+    compileOnly group: 'com.github.tutur1004', name:'cite_core', version:'-SNAPSHOT'
+    compileOnly files('C:/Users/arthu/Google Drive/Games/Minecraft/Dev/Java/MysqlPlayerDataBridge-v3.34.3.jar')
+}
