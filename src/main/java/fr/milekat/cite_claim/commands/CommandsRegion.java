@@ -1,5 +1,9 @@
 package fr.milekat.cite_claim.commands;
 
+import com.sk89q.worldedit.IncompleteRegionException;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import fr.milekat.cite_claim.MainClaim;
 import fr.milekat.cite_claim.engines.RegionsTask;
 import fr.milekat.cite_claim.obj.Region;
@@ -21,6 +25,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class CommandsRegion implements CommandExecutor {
@@ -58,12 +63,7 @@ public class CommandsRegion implements CommandExecutor {
                         sender.sendMessage(MainCore.prefixCmd + "§cMerci de mettre un prix valide.");
                     }
                 } else if (args.length == 3 && args[1].equalsIgnoreCase("claim")) {
-                    if (MainClaim.boundRegionleft.get(((Player) sender).getUniqueId()) == null ||
-                            MainClaim.boundRegionright.get(((Player) sender).getUniqueId()) == null) {
-                        sender.sendMessage(MainCore.prefixCmd + "§cMerci de faire une selection WE.");
-                    } else {
-                        updateClaim((Player) sender, MainClaim.regions.get(args[2]));
-                    }
+                    updateClaim((Player) sender, MainClaim.regions.get(args[2]));
                 } else if (args.length == 4 && args[1].equalsIgnoreCase("quartier")) {
                     updateQuartier((Player) sender, MainClaim.regions.get(args[2]), args[3]);
                 } else if (args.length == 3 && args[1].equalsIgnoreCase("sign")) {
@@ -141,26 +141,49 @@ public class CommandsRegion implements CommandExecutor {
      *      Définition / Redéfinition de blocks de la claim
      */
     private void updateClaim(Player player, Region region) {
-        Location pos1 = MainClaim.boundRegionleft.get((player).getUniqueId());
-        Location pos2 = MainClaim.boundRegionright.get((player).getUniqueId());
-        StringBuilder pos = new StringBuilder();
-        for (Block block : getBlocks(pos1,pos2,Bukkit.getServer().getWorld("world"))) {
-            pos.append(";");
-            pos.append(block.getLocation().getBlockX());
-            pos.append(":");
-            pos.append(block.getLocation().getBlockY());
-            pos.append(":");
-            pos.append(block.getLocation().getBlockZ());
-            MainClaim.regionsBlocks.put(block.getLocation(), region.getName());
-            block.setType(Material.AIR);
-        }
         try {
-            updateSQLRegion(region, "locs", pos.substring(1), 0);
-            player.sendMessage(MainCore.prefixCmd + "§6Claim mise à jour pour la région §b" + region.getName() + "§c.");
-        } catch (SQLException throwables) {
-            player.sendMessage(MainCore.prefixCmd + "§cErreur SQL.");
-            Bukkit.getLogger().warning(MainClaim.prefixConsole + "Erreur de l'update du claim de: " + region.getName());
-            throwables.printStackTrace();
+            WorldEditPlugin worldEdit = (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
+            if (worldEdit == null) {
+                player.sendMessage(MainCore.prefixCmd + "§cErreur WorlEdit");
+                return;
+            }
+            com.sk89q.worldedit.regions.Region selection;
+            try {
+                 selection = worldEdit.getSession(player).getSelection(BukkitAdapter.adapt(player.getWorld()));
+            } catch (IncompleteRegionException ignore) {
+                player.sendMessage(MainCore.prefixCmd + "§cMerci de faire une selection WE.");
+                return;
+            }
+            CuboidRegion cuboid = new CuboidRegion(selection.getMaximumPoint(),selection.getMinimumPoint());
+            Location pos1 = new Location(player.getWorld(),cuboid.getPos1().getX(),cuboid.getPos1().getY(),cuboid.getPos1().getZ());
+            Location pos2 = new Location(player.getWorld(),cuboid.getPos2().getX(),cuboid.getPos2().getY(),cuboid.getPos2().getZ());
+            StringBuilder pos = new StringBuilder();
+            HashMap<Location, String> blocks = new HashMap<>();
+            try {
+                for (Block block : getBlocks(pos1,pos2,player.getWorld())) {
+                    pos.append(";");
+                    pos.append(block.getLocation().getBlockX());
+                    pos.append(":");
+                    pos.append(block.getLocation().getBlockY());
+                    pos.append(":");
+                    pos.append(block.getLocation().getBlockZ());
+                    blocks.put(block.getLocation(), region.getName());
+                    block.setType(Material.AIR);
+                }
+                updateSQLRegion(region, "locs", pos.substring(1), 0);
+                MainClaim.regionsBlocks.putAll(blocks);
+                region.setBlocks(new ArrayList<>(blocks.keySet()));
+                player.sendMessage(MainCore.prefixCmd + "§6Claim mise à jour pour la région §b" + region.getName() + "§c.");
+            } catch (SQLException throwables) {
+                player.sendMessage(MainCore.prefixCmd + "§cErreur SQL.");
+                Bukkit.getLogger().warning(MainClaim.prefixConsole + "Erreur de l'update du claim de: " + region.getName());
+                throwables.printStackTrace();
+            } catch (StringIndexOutOfBoundsException ignore) {
+                player.sendMessage(MainCore.prefixCmd + "§cAucun block trouvé, opération annulée.");
+            }
+        } catch (ClassCastException  exception) {
+            player.sendMessage(MainCore.prefixCmd + "§cErreur WorlEdit");
+            exception.printStackTrace();
         }
     }
 
