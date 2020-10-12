@@ -26,7 +26,7 @@ public class ClaimInfo {
         if (MainClaim.isBuildMods(p)) return true;
         Region region = getRegion(location);
         if (region == null) return false;
-        if (region.getName().equalsIgnoreCase("interract-ok")) return true;
+        if (region.getName().equalsIgnoreCase("interact-ok")) return true;
         return canBuild(location,p);
     }
 
