@@ -14,10 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.type.Stairs;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.ThrownPotion;
+import org.bukkit.entity.*;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -50,7 +47,7 @@ public class EventsCite implements Listener {
         if (event.isNewPlayer()) event.getPlayer().teleport(new Location(Bukkit.getWorld("world"),-2,157,-8));
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onPlaceWater(PlayerBucketEmptyEvent event) {
         if (!ClaimInfo.canBuild(event.getBlock().getLocation(), event.getPlayer())) {
             event.setCancelled(true);
@@ -58,7 +55,7 @@ public class EventsCite implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onWaterTake(PlayerBucketFillEvent event) {
         if (!ClaimInfo.canBuild(event.getBlock().getLocation(), event.getPlayer())) {
             event.setCancelled(true);
@@ -66,7 +63,7 @@ public class EventsCite implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onPlace(BlockPlaceEvent event) {
         if (!ClaimInfo.canBuild(event.getBlockPlaced().getLocation(), event.getPlayer())) {
             event.setCancelled(true);
@@ -111,6 +108,23 @@ public class EventsCite implements Listener {
             if (Objects.equals(event.getHand(), EquipmentSlot.HAND)) {
                 denyMsg(player);
             }
+        }
+    }
+
+    @EventHandler (ignoreCancelled = true)
+    public void onTeleport(PlayerTeleportEvent event) {
+        if (event.getCause().equals(PlayerTeleportEvent.TeleportCause.ENDER_PEARL) ||
+                event.getCause().equals(PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT)) {
+            if (!ClaimInfo.canBeHere(event.getPlayer().getLocation(), event.getPlayer()) ||
+                    !ClaimInfo.canBeHere(event.getTo(), event.getPlayer())) {
+                event.setCancelled(true);
+                denyMsg(event.getPlayer());
+            }
+        } else if (event.getCause().equals(PlayerTeleportEvent.TeleportCause.NETHER_PORTAL) ||
+                event.getCause().equals(PlayerTeleportEvent.TeleportCause.END_PORTAL) ||
+                event.getCause().equals(PlayerTeleportEvent.TeleportCause.END_GATEWAY)) {
+            event.setCancelled(true);
+            denyMsg(event.getPlayer());
         }
     }
 
@@ -214,7 +228,7 @@ public class EventsCite implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onDrop(PlayerDropItemEvent event){
         if (!event.getPlayer().getOpenInventory().getType().equals(InventoryType.MERCHANT)) {
             if (!MainClaim.isBuildMods(event.getPlayer())) {
@@ -223,7 +237,7 @@ public class EventsCite implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onItemFrameDestroy(HangingBreakEvent event){
         if (event.getCause().equals(HangingBreakEvent.RemoveCause.OBSTRUCTION)) {
             event.setCancelled(true);
@@ -246,7 +260,7 @@ public class EventsCite implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onItemFrameBy(HangingBreakByEntityEvent event){
         if (!(event.getRemover() instanceof Player)) {
             event.setCancelled(true);
@@ -256,7 +270,7 @@ public class EventsCite implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onItemFromItemFrameBy(EntityDamageByEntityEvent event){
         if (event.getEntity() instanceof ItemFrame) {
             if (!(event.getDamager() instanceof Player)) {
@@ -278,7 +292,7 @@ public class EventsCite implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onHangingPlace(HangingPlaceEvent event){
         if (event.getPlayer()==null) {
             event.setCancelled(true);
@@ -288,7 +302,7 @@ public class EventsCite implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onShoot(EntityShootBowEvent event) {
         if (!(event.getEntity() instanceof Player)) {
             event.setCancelled(true);
@@ -298,7 +312,7 @@ public class EventsCite implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onPlayerAttack(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player) || MainClaim.isBuildMods((Player) event.getDamager())) return;
         if (!ClaimInfo.canBuild(event.getEntity().getLocation(), (Player) event.getDamager())) {
@@ -307,61 +321,61 @@ public class EventsCite implements Listener {
         }
     }
 
-    @EventHandler
-    public void onSpawnPotionThrow(ProjectileLaunchEvent event) {
-        if (!(event.getEntity() instanceof ThrownPotion)) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onDamage(EntityDamageEvent event) {
         if (event.getEntityType() == EntityType.PLAYER) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
+    public void onSpawnPotionThrow(ProjectileLaunchEvent event) {
+        if (event.getEntity() instanceof ThrownPotion) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler (ignoreCancelled = true)
     public void onSpawnPotionSplash(PotionSplashEvent event) {
         event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onPrimeExplode(ExplosionPrimeEvent event) {
         event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onEntityExplode(EntityExplodeEvent event) {
         event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onBlockExplode(BlockExplodeEvent event) {
         event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onFlow(BlockFromToEvent event) {
         event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onForm(BlockFormEvent event) {
         event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onBurn(BlockBurnEvent event) {
         event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onSaturation(FoodLevelChangeEvent event) {
         event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onPistonExtend(BlockPistonExtendEvent event) {
         for (Block block : event.getBlocks()) {
             if (ClaimInfo.getRegion(block.getLocation())==null ||
@@ -372,7 +386,7 @@ public class EventsCite implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler (ignoreCancelled = true)
     public void onPistonRetract(BlockPistonRetractEvent event) {
         for (Block block : event.getBlocks()) {
             if (ClaimInfo.getRegion(block.getLocation())==null ||
