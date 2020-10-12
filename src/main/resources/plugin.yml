@@ -13,13 +13,11 @@ commands:
     description: "Commande pour passer en Build-Mode"
     aliases:
       - buildmode
-  rg-reload:
-    usage: "/rg-reload"
-    permission: modo.claim.command.reload
-    permission-message: "&cVous n'avez pas la permission d'utiliser cette commande."
-    description: "Commande pour reload toutes les pos des régions."
   region:
     usage: "/region"
     permission: modo.claim.command.region
     permission-message: "&cVous n'avez pas la permission d'utiliser cette commande."
     description: "Commande gérer les régions."
+    aliases:
+      - rg
+#
