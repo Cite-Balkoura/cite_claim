@@ -13,7 +13,7 @@ public class ClaimInfo {
      * @return nom de la région (cite par défaut)
      */
     public static Region getRegion(Location location) {
-        return MainClaim.regions.getOrDefault(MainClaim.regionsBlocks.get(location),null);
+        return MainClaim.regions.getOrDefault(MainClaim.regionsBlocks.get(location.getBlock().getLocation()),null);
     }
 
     /**

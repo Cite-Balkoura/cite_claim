@@ -113,8 +113,8 @@ public class EventsCite implements Listener {
 
     @EventHandler (ignoreCancelled = true)
     public void onTeleport(PlayerTeleportEvent event) {
-        if (event.getCause().equals(PlayerTeleportEvent.TeleportCause.ENDER_PEARL) ||
-                event.getCause().equals(PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT)) {
+        if ((event.getCause().equals(PlayerTeleportEvent.TeleportCause.ENDER_PEARL) ||
+                event.getCause().equals(PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT)) && event.getTo()!=null) {
             if (!ClaimInfo.canBeHere(event.getPlayer().getLocation(), event.getPlayer()) ||
                     !ClaimInfo.canBeHere(event.getTo(), event.getPlayer())) {
                 event.setCancelled(true);
@@ -158,15 +158,6 @@ public class EventsCite implements Listener {
                     removeToClaim(block.getLocation(), player);
                 }
             }
-        }
-    }
-
-    @EventHandler (ignoreCancelled = true)
-    public void onInteract(PlayerInteractEvent event) {
-        if (!event.getAction().equals(Action.PHYSICAL)) return;
-        if (!ClaimInfo.canInterract(event.getPlayer().getLocation().getBlock().getLocation(), event.getPlayer())) {
-            event.setCancelled(true);
-            event.setUseInteractedBlock(Event.Result.DENY);
         }
     }
 
@@ -225,6 +216,15 @@ public class EventsCite implements Listener {
             Bukkit.getLogger().warning(MainClaim.prefixConsole + "Erreur dans le remove d'un block à une région.");
             throwables.printStackTrace();
             player.sendMessage(MainCore.prefixCmd + "§cErreur dans le remove du block.");
+        }
+    }
+
+    @EventHandler (ignoreCancelled = true)
+    public void onInteract(PlayerInteractEvent event) {
+        if (!event.getAction().equals(Action.PHYSICAL)) return;
+        if (!ClaimInfo.canInterract(event.getPlayer().getLocation().getBlock().getLocation(), event.getPlayer())) {
+            event.setCancelled(true);
+            event.setUseInteractedBlock(Event.Result.DENY);
         }
     }
 
