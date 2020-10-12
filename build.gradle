@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'application'
 }
 
 repositories {
@@ -16,14 +15,9 @@ jar {
     manifest {
         attributes "Main-Class": "fr.milekat.cite_claim.MainClaim"
     }
-
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
-}
-
-application {
-    mainClassName = 'fr.milekat.cite_claim.MainClaim'
 }
 
 dependencies {
