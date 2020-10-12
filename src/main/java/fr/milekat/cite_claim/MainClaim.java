@@ -21,15 +21,12 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.UUID;
 
 public class MainClaim extends JavaPlugin implements Listener {
     // Init des var static, pour tous le projet
     public static String prefixConsole = "[Balkoura-claim] ";
     public static LinkedHashMap<String, Region> regions = new LinkedHashMap<>();
     public static HashMap<Location, String> regionsBlocks = new HashMap<>();
-    public static HashMap<UUID, Location> boundRegionright = new HashMap<>();
-    public static HashMap<UUID, Location> boundRegionleft = new HashMap<>();
     public static ItemStack bookAgence;
     private static MainClaim mainClaim;
     private BukkitTask regionsEngine;
