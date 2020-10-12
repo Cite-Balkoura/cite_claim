@@ -13,7 +13,7 @@ public class Region {
     private Sign sign;
     private int prix;
     private Team team;
-    private final ArrayList<Location> blocks;
+    private ArrayList<Location> blocks;
 
     public Region(int id, String name, String quartier, Sign sign, int prix, Team team, ArrayList<Location> blocks) {
         this.id = id;
@@ -67,5 +67,9 @@ public class Region {
 
     public ArrayList<Location> getBlocks() {
         return blocks;
+    }
+
+    public void setBlocks(ArrayList<Location> locations) {
+        this.blocks = locations;
     }
 }
