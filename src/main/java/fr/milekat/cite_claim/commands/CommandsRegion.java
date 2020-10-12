@@ -1,7 +1,9 @@
 package fr.milekat.cite_claim.commands;
 
 import fr.milekat.cite_claim.MainClaim;
+import fr.milekat.cite_claim.engines.RegionsTask;
 import fr.milekat.cite_claim.obj.Region;
+import fr.milekat.cite_claim.utils.RegionsBlocksLoad;
 import fr.milekat.cite_core.MainCore;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -26,39 +28,63 @@ public class CommandsRegion implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!(sender instanceof Player)) return true; /* Commande désactivée pour la console */
         if (sender.hasPermission("modo.claim.command.claim")) {
-            if (args.length==2 && args[0].equalsIgnoreCase("claim")) {
-                if (MainClaim.boundRegionleft.get(((Player) sender).getUniqueId())==null ||
-                        MainClaim.boundRegionright.get(((Player) sender).getUniqueId())==null) {
-                    sender.sendMessage(MainCore.prefixCmd + "§cMerci de faire une selection WE.");
-                } else {
-                    if (MainClaim.regions.containsKey(args[1])) {
-                        setClaim((Player) sender,args[1]);
-                    } else {
-                        sender.sendMessage(MainCore.prefixCmd + "§cRégion non reconnue.");
+            if (args.length >= 2 && args[0].equalsIgnoreCase("add")) {
+                try {
+                    Region region = addRegion((Player) sender, args[1]);
+                    if (args.length >= 3) {
+                        try {
+                            updatePrix((Player) sender, region, Integer.parseInt(args[3]));
+                        } catch (NumberFormatException exception) {
+                            sender.sendMessage(MainCore.prefixCmd + "§cMerci de mettre un prix valide.");
+                        }
                     }
+                    if (args.length == 4) {
+                        updateQuartier((Player) sender, region, args[3]);
+                    }
+                } catch (SQLException throwables) {
+                    Bukkit.getLogger().warning("Erreur dans la création d'une nouvelle région.");
+                    sender.sendMessage(MainCore.prefixCmd + "§cErreur dans la création d'une nouvelle région.");
+                    throwables.printStackTrace();
                 }
-            } else if (args.length==3 && args[0].equalsIgnoreCase("add")) {
-                newRegion(sender, args[1], Integer.parseInt(args[2]));
-                sender.sendMessage(MainCore.prefixCmd + "§6Région §b" + args[1] + "§6 ajoutée.");
-            } else if (args.length==2 && args[0].equalsIgnoreCase("sign")) {
-                if (MainClaim.regions.containsKey(args[1])) {
-                    setSign(sender, args[1]);
-                } else {
+            } else if (args[0].equalsIgnoreCase("update")) {
+                if (args.length >= 3 && !MainClaim.regions.containsKey(args[2])) {
                     sender.sendMessage(MainCore.prefixCmd + "§cRégion non reconnue.");
+                } else if (args.length == 4 && args[1].equalsIgnoreCase("prix")) {
+                    try {
+                        updatePrix((Player) sender, MainClaim.regions.get(args[2]), Integer.parseInt(args[3]));
+                    } catch (NumberFormatException exception) {
+                        sender.sendMessage(MainCore.prefixCmd + "§cMerci de mettre un prix valide.");
+                    }
+                } else if (args.length == 3 && args[1].equalsIgnoreCase("claim")) {
+                    if (MainClaim.boundRegionleft.get(((Player) sender).getUniqueId()) == null ||
+                            MainClaim.boundRegionright.get(((Player) sender).getUniqueId()) == null) {
+                        sender.sendMessage(MainCore.prefixCmd + "§cMerci de faire une selection WE.");
+                    } else {
+                        updateClaim((Player) sender, MainClaim.regions.get(args[2]));
+                    }
+                } else if (args.length == 4 && args[1].equalsIgnoreCase("quartier")) {
+                    updateQuartier((Player) sender, MainClaim.regions.get(args[2]), args[3]);
+                } else if (args.length == 3 && args[1].equalsIgnoreCase("sign")) {
+                    updateSign((Player) sender, MainClaim.regions.get(args[2]));
                 }
             } else if (args.length==2 && args[0].equalsIgnoreCase("tool")) {
                 if (MainClaim.regions.containsKey(args[1])) {
                     ItemMeta meta = ((Player) sender).getInventory().getItemInMainHand().getItemMeta();
-                    if (meta!=null) meta.setDisplayName(args[1]);
+                    if (meta != null) meta.setDisplayName(args[1]);
                     ((Player) sender).getInventory().getItemInMainHand().setItemMeta(meta);
                 } else {
                     sender.sendMessage(MainCore.prefixCmd + "§cRégion non reconnue.");
                 }
-            } else {
-                sendHelp(sender);
-            }
+            } else if (args[0].equalsIgnoreCase("reload")) {
+                new RegionsTask().updateRegion();
+                new RegionsBlocksLoad().reloadRegions();
+                sender.sendMessage("Reload effectué.");
+            } else sendHelp(sender, label);
+            return true;
         }
+        sender.sendMessage(MainCore.prefixCmd + "§cCommande pour les modos.");
         return true;
     }
 
@@ -66,38 +92,55 @@ public class CommandsRegion implements CommandExecutor {
      *      Envoie la liste d'help de la commande
      * @param sender joueur qui exécute la commande
      */
-    private void sendHelp(CommandSender sender){
+    private void sendHelp(CommandSender sender, String prefix){
         sender.sendMessage(MainCore.prefixCmd);
-        sender.sendMessage("§6/region add <nom_region> <prix>:§r Ajoute une région à la liste.");
-        sender.sendMessage("§6/region claim <nom_region>:§r claim la zone (Avoir une selection WE).");
-        sender.sendMessage("§6/region sign <nom_region>:§r défini le panneau (Regarder le panneau).");
-        sender.sendMessage("§6/region tool <nom_region>:§r défini l'outil (Avoir une blaze rod en main).");
+        sender.sendMessage("§6/" + prefix + " add <nom_region> [<prix>] [<nom_du_quartier>]:§r Ajoute une région à la liste.");
+        sender.sendMessage("§6/" + prefix + " update prix <nom_region> <prix>:§r défini le prix de la région.");
+        sender.sendMessage("§6/" + prefix + " update claim <nom_region>:§r claim la zone (Avoir une selection WE).");
+        sender.sendMessage("§6/" + prefix + " update quartier <nom_region> <nom_du_quartier:§r défini le quartier de la région.");
+        sender.sendMessage("§6/" + prefix + " update sign <nom_region>:§r défini le panneau (Regarder le panneau).");
+        sender.sendMessage("§6/" + prefix + " tool <nom_region>:§r défini l'outil (Avoir une blaze rod en main).");
+        sender.sendMessage("§6/" + prefix + " reload:§r recharge toutes les régions.");
     }
 
     /**
      *      Ajout d'une région dans la base SQL
      */
-    private void newRegion(CommandSender sender, String name, int prix) {
+    private Region addRegion(Player player, String name) throws SQLException {
         Connection connection = MainCore.getSQL().getConnection();
+        PreparedStatement q = connection.prepareStatement(
+                "INSERT INTO `" + MainCore.SQLPREFIX + "regions`(`rg_name`) VALUES (?) RETURNING `rg_id`;");
+        q.setString(1, name);
+        q.execute();
+        q.getResultSet().last();
+        Region region = new Region(q.getResultSet().getInt("rg_id"),
+                name, "", null, 0, null, new ArrayList<>());
+        MainClaim.regions.put(name, region);
+        q.close();
+        player.sendMessage(MainCore.prefixCmd + "§6Région §b" + name + "§6 créée.");
+        return region;
+    }
+
+    /**
+     *      Définition / Redéfinition de blocks de la claim
+     */
+    private void updatePrix(Player player, Region region, Integer prix) {
         try {
-            PreparedStatement q = connection.prepareStatement("INSERT INTO `" + MainCore.SQLPREFIX +
-                    "regions`(`rg_name`, `rg_prix`) VALUES (?,?) RETURNING `rg_id`;");
-            q.setString(1,name);
-            q.setInt(2,prix);
-            q.execute();
-            q.getResultSet().last();
-            MainClaim.regions.put(name, new Region(q.getResultSet().getInt("rg_id"),name,1,null,prix,null));
-            q.close();
+            updateSQLRegion(region,"prix",null,prix);
+            region.setPrix(prix);
+            player.sendMessage(MainCore.prefixCmd + "§6La région §b" + region.getName() +
+                    " §6coûte désormais §2" + prix + "Émeraudes§c.");
         } catch (SQLException throwables) {
-            Bukkit.getLogger().warning("Erreur dans la création d'une nouvelle région.");
-            sender.sendMessage(MainCore.prefixCmd + "§cImpossible de créer cette région avec ce nom.");
+            player.sendMessage(MainCore.prefixCmd + "§6Erreur SQL.");
+            Bukkit.getLogger().warning(MainClaim.prefixConsole + "Erreur de l'update du prix de: " + region.getName());
+            throwables.printStackTrace();
         }
     }
 
     /**
      *      Définition / Redéfinition de blocks de la claim
      */
-    private void setClaim(Player player, String region) {
+    private void updateClaim(Player player, Region region) {
         Location pos1 = MainClaim.boundRegionleft.get((player).getUniqueId());
         Location pos2 = MainClaim.boundRegionright.get((player).getUniqueId());
         StringBuilder pos = new StringBuilder();
@@ -108,19 +151,31 @@ public class CommandsRegion implements CommandExecutor {
             pos.append(block.getLocation().getBlockY());
             pos.append(":");
             pos.append(block.getLocation().getBlockZ());
-            MainClaim.regionsBlocks.put(block.getLocation(),region);
+            MainClaim.regionsBlocks.put(block.getLocation(), region.getName());
             block.setType(Material.AIR);
         }
-        Connection connection = MainCore.getSQL().getConnection();
         try {
-            PreparedStatement q = connection.prepareStatement("UPDATE `" + MainCore.SQLPREFIX +
-                    "regions` SET `rg_locs` = ? WHERE `rg_name` = ?;");
-            q.setString(1,pos.toString().substring(1));
-            q.setString(2,region);
-            q.execute();
-            q.close();
+            updateSQLRegion(region, "locs", pos.substring(1), 0);
+            player.sendMessage(MainCore.prefixCmd + "§6Claim mise à jour pour la région §b" + region.getName() + "§c.");
         } catch (SQLException throwables) {
-            Bukkit.getLogger().warning("Erreur de l'update du claim de: " + region);
+            player.sendMessage(MainCore.prefixCmd + "§cErreur SQL.");
+            Bukkit.getLogger().warning(MainClaim.prefixConsole + "Erreur de l'update du claim de: " + region.getName());
+            throwables.printStackTrace();
+        }
+    }
+
+    /**
+     *      Définition / Redéfinition de blocks de la claim
+     */
+    private void updateQuartier(Player player, Region region, String quartier) {
+        try {
+            updateSQLRegion(region,"quartier",quartier,0);
+            region.setQuartier(quartier);
+            player.sendMessage(MainCore.prefixCmd + "§6La région §b" + region.getName() +
+                    " §6est désormais dans le quartier §b" + quartier + "§c.");
+        } catch (SQLException throwables) {
+            player.sendMessage(MainCore.prefixCmd + "§cErreur SQL.");
+            Bukkit.getLogger().warning(MainClaim.prefixConsole + "Erreur de l'update du quartier de: " + region.getName());
             throwables.printStackTrace();
         }
     }
@@ -128,37 +183,43 @@ public class CommandsRegion implements CommandExecutor {
     /**
      *      Défini l'emplacement du sign de la région
      */
-    private void setSign(CommandSender sender, String region) {
-        Player player = (Player) sender;
+    private void updateSign(Player player, Region region) {
         Block block = player.getTargetBlockExact(5);
-        if (block!=null && block.getState() instanceof Sign) {
+        if (block != null && block.getState() instanceof Sign) {
             StringBuilder pos = new StringBuilder();
             pos.append(block.getLocation().getBlockX());
             pos.append(":");
             pos.append(block.getLocation().getBlockY());
             pos.append(":");
             pos.append(block.getLocation().getBlockZ());
-            Connection connection = MainCore.getSQL().getConnection();
             try {
-                PreparedStatement q = connection.prepareStatement("UPDATE `" + MainCore.SQLPREFIX +
-                        "regions` SET `rg_sign` = ? WHERE `rg_name` = ?;");
-                q.setString(1,pos.toString().substring(1));
-                q.setString(2,region);
-                q.execute();
-                q.close();
-                sender.sendMessage(MainCore.prefixCmd + "§6Panneau de la région §b" + region + "§6 défini.");
-            } catch (SQLException throwables) {
-                Bukkit.getLogger().warning("Erreur de l'update du sign de la région: " + region);
-                throwables.printStackTrace();
+                updateSQLRegion(region, "sign", pos.toString(), 0);
+                region.setSign((Sign) block.getState());
+                player.sendMessage(MainCore.prefixCmd + "§6Panneau mis à jour pour la région §b" + region.getName() + "§c.");
+            } catch (SQLException exception) {
+                player.sendMessage(MainCore.prefixCmd + "§6Erreur SQL.");
+                Bukkit.getLogger().warning(MainClaim.prefixConsole + "Erreur update Sign de: " + region.getName());
+                exception.printStackTrace();
             }
-        } else {
-            sender.sendMessage(MainCore.prefixCmd + "§cMerci de regarder un panneau vierge.");
-        }
+        } else player.sendMessage(MainCore.prefixCmd + "§cMerci de regarder un panneau vierge.");
+    }
+
+    /**
+     *      Update d'un paramètre dans le SQL, si String null, intValue sera utilisé
+     */
+    private void updateSQLRegion(Region region, String column, String stringValue, Integer intValue) throws SQLException {
+        Connection connection = MainCore.getSQL().getConnection();
+        PreparedStatement q = connection.prepareStatement("UPDATE `" + MainCore.SQLPREFIX +
+                "regions` SET `rg_" + column + "` = ? WHERE `rg_id` = ?;");
+        q.setObject(1, stringValue == null ? intValue : stringValue);
+        q.setInt(2, region.getId());
+        q.execute();
+        q.close();
     }
 
     /**
      *      Snipet from https://bukkit.org/threads/get-blocks-between-two-locations.262499/
-     *      Permet de loop tous les blocks between 2 pos ! (Filtré ici sur sur type=CLAIMBLOCK
+     *      Permet de loop tous les blocks between 2 pos ! (Filtré ici sur sur type=CLAIMBLOCK)
      */
     private List<Block> getBlocks(Location loc1, Location loc2, World w){
         //First of all, we create the list:
