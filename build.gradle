@@ -8,6 +8,7 @@ repositories {
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots' }
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven { url 'http://maven.enginehub.org/repo/' }
+    maven { url = 'https://repo.citizensnpcs.co' }
     maven { url = 'https://jitpack.io' }
 }
 
@@ -28,6 +29,7 @@ dependencies {
     //compileOnly group: 'net.md-5', name: 'bungeecord-chat', version: '1.16-R0.2-SNAPSHOT'
     compileOnly group: 'com.sk89q.worldedit', name: 'worldedit-core', version: '7.2.0-SNAPSHOT'
     compileOnly group: 'com.sk89q.worldedit', name: 'worldedit-bukkit', version: '7.2.0-SNAPSHOT'
+    compileOnly group: 'net.citizensnpcs', name: 'citizens-main', version: '2.0.27-SNAPSHOT'
     compileOnly group: 'com.github.tutur1004', name:'cite_libs', version:'-SNAPSHOT'
     compileOnly group: 'com.github.tutur1004', name:'cite_core', version:'-SNAPSHOT'
     compileOnly files('C:/Users/arthu/Google Drive/Games/Minecraft/Dev/Java/MysqlPlayerDataBridge-v3.34.3.jar')
