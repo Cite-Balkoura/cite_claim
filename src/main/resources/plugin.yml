@@ -20,4 +20,11 @@ commands:
     description: "Commande gérer les régions."
     aliases:
       - rg
+  ascenseur:
+    usage: "/ascenseur"
+    permission: modo.claim.command.ascenseur
+    permission-message: "&cVous n'avez pas la permission d'utiliser cette commande."
+    description: "Commande gérer les ascenseur."
+    aliases:
+      - asc
 #

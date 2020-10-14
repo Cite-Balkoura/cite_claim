@@ -1,5 +1,8 @@
 package fr.milekat.cite_claim;
 
+import fr.milekat.cite_claim.ascenseur.commands.AscenseurCmd;
+import fr.milekat.cite_claim.ascenseur.commands.AscenseurTab;
+import fr.milekat.cite_claim.ascenseur.obj.Ascenseur;
 import fr.milekat.cite_claim.commands.CommandsRegion;
 import fr.milekat.cite_claim.commands.ModeBuilder;
 import fr.milekat.cite_claim.commands.TabsRegion;
@@ -27,6 +30,7 @@ public class MainClaim extends JavaPlugin implements Listener {
     public static String prefixConsole = "[Balkoura-claim] ";
     public static LinkedHashMap<String, Region> regions = new LinkedHashMap<>();
     public static HashMap<Location, String> regionsBlocks = new HashMap<>();
+    public static HashMap<String, Ascenseur> ascenseurHashMap = new HashMap<>();
     public static ItemStack bookAgence;
     private static MainClaim mainClaim;
     private BukkitTask regionsEngine;
@@ -49,8 +53,10 @@ public class MainClaim extends JavaPlugin implements Listener {
         // Commandes
         getCommand("build").setExecutor(new ModeBuilder());
         getCommand("region").setExecutor(new CommandsRegion());
+        getCommand("ascenseur").setExecutor(new AscenseurCmd());
         // Tabs
         getCommand("region").setTabCompleter(new TabsRegion());
+        getCommand("ascenseur").setTabCompleter(new AscenseurTab());
     }
 
     @Override
