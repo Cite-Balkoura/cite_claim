@@ -21,7 +21,7 @@ public class ModeBuilder implements CommandExecutor {
             boolean mode = !MainClaim.isBuildMods(p);
             setBuildForP(p, mode);
             MainCore.profilHashMap.get(p.getUniqueId()).setMods_build(mode);
-            sender.sendMessage(MainCore.prefixCmd + "Mode build : " + mode);
+            sender.sendMessage(MainCore.prefixCmd + "Mode build: " + mode);
         }
         return true;
     }
