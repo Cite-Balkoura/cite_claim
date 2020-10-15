@@ -1,49 +1,62 @@
 package fr.milekat.cite_claim.ascenseur.obj;
 
+import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.Equipment;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.data.type.Sign;
+import org.bukkit.block.Block;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
+
 public class Ascenseur {
     private final String name;
-    private NPC npc;
+    private int npcid;
     private Location floorDownLoc;
     private Location floorUpLoc;
     private Integer yawDown;
     private Integer yawUp;
     private Location boutonDown;
     private Location boutonUp;
-    private Sign signDown;
-    private Sign signUp;
+    private ArrayList<Block> doorDown;
+    private ArrayList<Block> doorUp;
+    private Location signDown;
+    private Location signUp;
+    private Integer floor;
+    private boolean work;
 
-    public Ascenseur(String name, NPC npc, Location floorDownLoc, Location floorUpLoc, Integer yawDown, Integer yawUp, Location boutonDown, Location boutonUp, Sign signDown, Sign signUp) {
+    public Ascenseur(String name, int npcid, Location floorDownLoc, Location floorUpLoc, Integer yawDown, Integer yawUp, Location boutonDown, Location boutonUp, ArrayList<Block> doorDown, ArrayList<Block> doorUp, Location signDown, Location signUp) {
         this.name = name;
-        this.npc = npc;
+        this.npcid = npcid;
         this.floorDownLoc = floorDownLoc;
         this.floorUpLoc = floorUpLoc;
         this.yawDown = yawDown;
         this.yawUp = yawUp;
         this.boutonDown = boutonDown;
         this.boutonUp = boutonUp;
+        this.doorDown = doorDown;
+        this.doorUp = doorUp;
         this.signDown = signDown;
         this.signUp = signUp;
+        this.work = false;
+        this.floor = 0;
     }
 
     public boolean isComplete() {
-        return npc != null && floorDownLoc != null && floorUpLoc != null && yawDown != null && yawUp != null;
+        NPC npc = CitizensAPI.getNPCRegistry().getById(npcid);
+        return npc != null && floorDownLoc != null && floorUpLoc != null
+                && yawDown != null && yawUp != null && boutonDown != null && boutonUp != null;
     }
 
-    public NPC getNpc() {
-        return npc;
+    public int getNpcId() {
+        return npcid;
     }
 
-    public void setNpc(NPC npc) {
-        this.npc = npc;
+    public void setNpcId(int npcid) {
+        this.npcid = npcid;
     }
 
     public Location getFloorDownLoc() {
@@ -83,10 +96,11 @@ public class Ascenseur {
     }
 
     private void setDoor(ItemStack itemStack) {
-        Equipment equipment = this.npc.getTrait(Equipment.class);
+        NPC npc = CitizensAPI.getNPCRegistry().getById(this.npcid);
+        Equipment equipment = npc.getTrait(Equipment.class);
         equipment.set(Equipment.EquipmentSlot.HELMET,itemStack);
         Location newLoc = npc.getEntity().getLocation();
-        if (newLoc.distance(floorDownLoc) < newLoc.distance(floorUpLoc)) {
+        if (floorDownLoc != null && floorUpLoc != null && newLoc.distance(floorDownLoc) < newLoc.distance(floorUpLoc)) {
             newLoc.setYaw(yawDown);
         } else {
             newLoc.setYaw(yawUp);
@@ -126,23 +140,55 @@ public class Ascenseur {
         this.boutonUp = boutonUp;
     }
 
-    public Sign getSignDown() {
+    public Location getSignDown() {
         return signDown;
     }
 
-    public void setSignDown(Sign signDown) {
+    public void setSignDown(Location signDown) {
         this.signDown = signDown;
     }
 
-    public Sign getSignUp() {
+    public Location getSignUp() {
         return signUp;
     }
 
-    public void setSignUp(Sign signUp) {
+    public void setSignUp(Location signUp) {
         this.signUp = signUp;
     }
 
     public String getName() {
         return name;
+    }
+
+    public Integer getFloor() {
+        return floor;
+    }
+
+    public void setFloor(Integer floor) {
+        this.floor = floor;
+    }
+
+    public ArrayList<Block> getDoorDown() {
+        return doorDown;
+    }
+
+    public void setDoorDown(ArrayList<Block> doorDown) {
+        this.doorDown = doorDown;
+    }
+
+    public ArrayList<Block> getDoorUp() {
+        return doorUp;
+    }
+
+    public void setDoorUp(ArrayList<Block> doorUp) {
+        this.doorUp = doorUp;
+    }
+
+    public boolean isWork() {
+        return work;
+    }
+
+    public void setWork(boolean work) {
+        this.work = work;
     }
 }
