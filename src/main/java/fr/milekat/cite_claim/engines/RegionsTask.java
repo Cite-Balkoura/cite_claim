@@ -65,9 +65,11 @@ public class RegionsTask {
                 }
             }
             q.close();
-        } catch (SQLException throwables) {
+        } catch (SQLException exception) {
             Bukkit.getLogger().warning("Impossible d'update les habitations.");
-            throwables.printStackTrace();
+            exception.printStackTrace();
+        } catch (ClassCastException exception) {
+            Bukkit.getLogger().warning(MainClaim.prefixConsole + "Erreur chargement ascenseur, le block n'est pas un Sign.");
         }
     }
 
