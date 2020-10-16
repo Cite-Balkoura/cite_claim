@@ -104,8 +104,6 @@ public class AscenseurManager {
                         getLocationString(q.getResultSet().getString("signDown")).getBlock().getLocation();
                 if (q.getResultSet().getString("signUp")!=null) signUp =
                         getLocationString(q.getResultSet().getString("signUp")).getBlock().getLocation();
-                NPC npc = CitizensAPI.getNPCRegistry().getById(q.getResultSet().getInt("npc_id"));
-                if (npc == null) continue;
                 Location floorDownLoc = getLocationString(q.getResultSet().getString("floorDownLoc"));
                 Location floorUpLoc = getLocationString(q.getResultSet().getString("floorUpLoc"));
                 Location boutonDown = getLocationString(q.getResultSet().getString("boutonDown"));
@@ -119,7 +117,7 @@ public class AscenseurManager {
                     for (String locs: new ArrayList<>(Arrays.asList(q.getResultSet().getString("doorUp").split(";"))))
                         doorUp.add(getLocationString(locs).getBlock());
                 Ascenseur ascenseur = new Ascenseur(
-                        q.getResultSet().getString("asc_name"), npc.getId(),
+                        q.getResultSet().getString("asc_name"), q.getResultSet().getInt("npc_id"),
                         floorDownLoc, floorUpLoc,
                         q.getResultSet().getInt("yawDown"), q.getResultSet().getInt("yawUp"),
                         boutonDown, boutonUp, doorDown, doorUp, signDown, signUp);
@@ -129,7 +127,8 @@ public class AscenseurManager {
                 if (floorDownLoc != null) {
                     Location npcbaseloc = floorDownLoc.clone();
                     npcbaseloc.setY(floorDownLoc.getBlockY() + 1);
-                    npc.teleport(npcbaseloc, PlayerTeleportEvent.TeleportCause.PLUGIN);
+                    NPC npc = CitizensAPI.getNPCRegistry().getById(q.getResultSet().getInt("npc_id"));
+                    if (npc!=null) npc.teleport(npcbaseloc, PlayerTeleportEvent.TeleportCause.PLUGIN);
                     ascenseur.openDoor();
                     for (Block block : ascenseur.getDoorDown()) block.setType(Material.AIR);
                 }

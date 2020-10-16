@@ -97,6 +97,7 @@ public class Ascenseur {
 
     private void setDoor(ItemStack itemStack) {
         NPC npc = CitizensAPI.getNPCRegistry().getById(this.npcid);
+        if (npc==null) return;
         Equipment equipment = npc.getTrait(Equipment.class);
         equipment.set(Equipment.EquipmentSlot.HELMET,itemStack);
         Location newLoc = npc.getEntity().getLocation();

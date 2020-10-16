@@ -19,13 +19,10 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 
 public class AscenseurListener implements Listener {
-    private BukkitTask task;
-
     @EventHandler (priority = EventPriority.LOW)
     public void onPlayerClickAscenseur(PlayerInteractEvent event) {
         if (event.getClickedBlock() != null && MainClaim.boutonAscenseur.containsKey(event.getClickedBlock().getLocation())) {
