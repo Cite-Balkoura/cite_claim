@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -72,6 +73,7 @@ public class AscenseurListener implements Listener {
             ((LivingEntity) npc.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION,
                     500, 5, false, false, false));
             ArrayList<Player> passengers = new ArrayList<>();
+            updateSignAsc(ascenseur);
             Bukkit.getScheduler().scheduleSyncDelayedTask(MainClaim.getInstance(), () -> {
                 for (Player player : Bukkit.getOnlinePlayers())
                     if (player.getLocation().distance(npc.getEntity().getLocation()) <= 2) {
@@ -94,6 +96,7 @@ public class AscenseurListener implements Listener {
                         for (Block block : ascenseur.getDoorUp()) block.setType(Material.AIR);
                         ascenseur.openDoor();
                         ascenseur.setFloor(1);
+                        updateSignFloored(ascenseur);
                         cancel();
                     }
                 }
@@ -113,6 +116,7 @@ public class AscenseurListener implements Listener {
             ((LivingEntity) npc.getEntity()).addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION,
                     500, -5, false, false, false));
             ArrayList<Player> passengers = new ArrayList<>();
+            updateSignDesc(ascenseur);
             for (Player player : Bukkit.getOnlinePlayers())
                 if (player.getLocation().distance(npc.getEntity().getLocation()) <= 2) {
                     passengers.add(player);
@@ -140,6 +144,7 @@ public class AscenseurListener implements Listener {
                         for (Block block : ascenseur.getDoorDown()) block.setType(Material.AIR);
                         ascenseur.openDoor();
                         ascenseur.setFloor(0);
+                        updateSignFloored(ascenseur);
                         cancel();
                     }
                 }
@@ -172,9 +177,9 @@ public class AscenseurListener implements Listener {
         int x2 = ascenseur.getFloorUpLoc().getBlockX() - 1;
         int z2 = ascenseur.getFloorUpLoc().getBlockZ() - 1;
         //Then we create the following integers
-        int xMin, yMin, zMin;
-        int xMax, yMax, zMax;
-        int x, y, z;
+        int xMin, zMin;
+        int xMax, zMax;
+        int x, z;
         //Now we need to make sure xMin is always lower then xMax
         if(x1 > x2){ //If x1 is a higher number then x2
             xMin = x2;
@@ -199,5 +204,55 @@ public class AscenseurListener implements Listener {
         }
         //And last but not least, we return with the list
         return blocks;
+    }
+
+    /**
+     *      Update lorsqu'un ascenseur est stationné
+     */
+    private void updateSignFloored(Ascenseur ascenseur) {
+        for (Sign sign: getSigns(ascenseur)) {
+            sign.setLine(0, MainCore.prefixCmd);
+            sign.setLine(1, "§b" + ascenseur.getName());
+            sign.setLine(2, "§6Actuellement à");
+            sign.setLine(3, "§6l'étage §c" + ascenseur.getFloor());
+            sign.update();
+        }
+    }
+
+    /**
+     *      Update lorsqu'un ascenseur descend
+     */
+    private void updateSignDesc(Ascenseur ascenseur) {
+        for (Sign sign: getSigns(ascenseur)) {
+            sign.setLine(0, MainCore.prefixCmd);
+            sign.setLine(1, "§b" + ascenseur.getName());
+            sign.setLine(2, "§6Actuellement en");
+            sign.setLine(3, "§cdescente");
+            sign.update();
+        }
+    }
+
+    /**
+     *      Update lorsqu'un ascenseur monte
+     */
+    private void updateSignAsc(Ascenseur ascenseur) {
+        for (Sign sign: getSigns(ascenseur)) {
+            sign.setLine(0, MainCore.prefixCmd);
+            sign.setLine(1, "§b" + ascenseur.getName());
+            sign.setLine(2, "§6Actuellement en");
+            sign.setLine(3, "§amontée");
+            sign.update();
+        }
+    }
+
+    private ArrayList<Sign> getSigns(Ascenseur ascenseur) {
+        ArrayList<Sign> signsReturn = new ArrayList<>();
+        try {
+            signsReturn.add((Sign) ascenseur.getSignDown().getBlock().getState());
+            signsReturn.add((Sign) ascenseur.getSignUp().getBlock().getState());
+        } catch (ClassCastException exception) {
+            exception.printStackTrace();
+        }
+        return signsReturn;
     }
 }
