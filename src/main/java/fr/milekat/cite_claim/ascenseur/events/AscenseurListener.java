@@ -148,7 +148,7 @@ public class AscenseurListener implements Listener {
                         cancel();
                     }
                 }
-            }.runTaskTimer(MainClaim.getInstance(),50L,5L);
+            }.runTaskTimer(MainClaim.getInstance(),0L,5L);
         },100L);
     }
 
