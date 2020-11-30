@@ -11,7 +11,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import xyz.upperlevel.spigot.book.BookUtil;
 
 public class OpenAgence implements Listener {
-    private final Location locationAgenge = new Location(Bukkit.getWorld("world"),-11,155,-4);
+    private final Location locationAgenge = new Location(Bukkit.getWorld("world"),-16,99,27);
 
     @EventHandler(priority = EventPriority.LOW)
     public void onOpenAgence(PlayerInteractEvent event) {
