@@ -29,7 +29,7 @@ public class TabsRegion implements TabCompleter {
                     return MainCore.getTabArgs(args[3], new ArrayList<>(Arrays.asList("Plateau", "Montagne", "Favélas")));
                 }
             } else if (args[0].equalsIgnoreCase("tool")) {
-                return MainCore.getTabArgs(args[2], new ArrayList<>(MainClaim.regions.keySet()));
+                return MainCore.getTabArgs(args[1], new ArrayList<>(MainClaim.regions.keySet()));
             }
         }
         return null;

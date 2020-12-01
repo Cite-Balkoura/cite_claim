@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 
 public class RegionMarket implements Listener {
     public static final String PREFIX = "§8[§bBalkou§2Immo§8]";
@@ -100,7 +101,11 @@ public class RegionMarket implements Listener {
             PreparedStatement q = connection.prepareStatement("UPDATE `" + MainCore.SQLPREFIX +
                     "regions` SET `team_id` = ? WHERE `rg_id` = ?;" +
                     "UPDATE `" + MainCore.SQLPREFIX + "team` SET `money` = ? WHERE `team_id` = ?;");
-            q.setInt(1, team.getId());
+            if (region.getTeam()==null) {
+                q.setNull(1, Types.NULL);
+            } else {
+                q.setInt(1, region.getTeam().getId());
+            }
             q.setInt(2, region.getId());
             q.setInt(3, team.getMoney());
             q.setInt(4, team.getId());

@@ -53,7 +53,7 @@ public class CommandsRegion implements CommandExecutor {
                     sender.sendMessage(MainCore.prefixCmd + "§cErreur dans la création d'une nouvelle région.");
                     throwables.printStackTrace();
                 }
-            } else if (args[0].equalsIgnoreCase("update")) {
+            } else if (args.length >= 1 && args[0].equalsIgnoreCase("update")) {
                 if (args.length >= 3 && !MainClaim.regions.containsKey(args[2])) {
                     sender.sendMessage(MainCore.prefixCmd + "§cRégion non reconnue.");
                 } else if (args.length == 4 && args[1].equalsIgnoreCase("prix")) {
@@ -77,7 +77,7 @@ public class CommandsRegion implements CommandExecutor {
                 } else {
                     sender.sendMessage(MainCore.prefixCmd + "§cRégion non reconnue.");
                 }
-            } else if (args[0].equalsIgnoreCase("reload")) {
+            } else if (args.length >= 1 && args[0].equalsIgnoreCase("reload")) {
                 new RegionsTask().updateRegion();
                 new RegionsBlocksLoad().reloadRegions();
                 sender.sendMessage("Reload effectué.");
