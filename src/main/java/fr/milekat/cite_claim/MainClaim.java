@@ -11,6 +11,7 @@ import fr.milekat.cite_claim.commands.TabsRegion;
 import fr.milekat.cite_claim.engines.AgenceUpdate;
 import fr.milekat.cite_claim.engines.RegionsTask;
 import fr.milekat.cite_claim.engines.SpeedBoost;
+import fr.milekat.cite_claim.events.CapitaineFeature;
 import fr.milekat.cite_claim.events.EventsCite;
 import fr.milekat.cite_claim.events.OpenAgence;
 import fr.milekat.cite_claim.events.RegionMarket;
@@ -54,6 +55,7 @@ public class MainClaim extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new RegionMarket(),this);
         getServer().getPluginManager().registerEvents(new OpenAgence(),this);
         getServer().getPluginManager().registerEvents(new AscenseurListener(),this);
+        getServer().getPluginManager().registerEvents(new CapitaineFeature(),this);
         // Commandes
         getCommand("build").setExecutor(new ModeBuilder());
         getCommand("region").setExecutor(new CommandsRegion());
