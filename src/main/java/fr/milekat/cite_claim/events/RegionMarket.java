@@ -5,6 +5,7 @@ import fr.milekat.cite_claim.obj.Region;
 import fr.milekat.cite_core.MainCore;
 import fr.milekat.cite_core.core.obj.Profil;
 import fr.milekat.cite_core.core.obj.Team;
+import fr.milekat.cite_libs.MainLibs;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -96,7 +97,7 @@ public class RegionMarket implements Listener {
      *      Mise à jour de l'argent de l'équipe & de l'équipe titulaire de la région
      */
     private void updateTranscation(Team team, Region region) {
-        Connection connection = MainCore.getSQL().getConnection();
+        Connection connection = MainLibs.getSql();
         try {
             PreparedStatement q = connection.prepareStatement("UPDATE `" + MainCore.SQLPREFIX +
                     "regions` SET `team_id` = ? WHERE `rg_id` = ?;" +

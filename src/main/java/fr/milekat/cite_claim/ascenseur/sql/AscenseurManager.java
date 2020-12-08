@@ -3,6 +3,7 @@ package fr.milekat.cite_claim.ascenseur.sql;
 import fr.milekat.cite_claim.MainClaim;
 import fr.milekat.cite_claim.ascenseur.obj.Ascenseur;
 import fr.milekat.cite_core.MainCore;
+import fr.milekat.cite_libs.MainLibs;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
@@ -31,7 +32,7 @@ public class AscenseurManager {
      *      Fonction pour save un Ascenseur
      */
     public void saveAscenseur(Ascenseur ascenseur) {
-        Connection connection = MainCore.getSQL().getConnection();
+        Connection connection = MainLibs.getSql();
         try {
             PreparedStatement q = connection.prepareStatement("INSERT INTO `" + MainCore.SQLPREFIX + "ascenseurs` " +
                     "(`asc_name`, `npc_id`, `floorDownLoc`, " +
@@ -86,7 +87,7 @@ public class AscenseurManager {
      *      Chargement des Ascenseurs
      */
     public void loadAscenseur(String asc_name) {
-        Connection connection = MainCore.getSQL().getConnection();
+        Connection connection = MainLibs.getSql();
         try {
             PreparedStatement q;
             if (asc_name == null) {

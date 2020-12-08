@@ -4,7 +4,8 @@ import fr.milekat.cite_claim.MainClaim;
 import fr.milekat.cite_claim.obj.Region;
 import fr.milekat.cite_claim.utils.ClaimInfo;
 import fr.milekat.cite_core.MainCore;
-import fr.milekat.cite_libs.utils_tools.LocToString;
+import fr.milekat.cite_libs.MainLibs;
+import fr.milekat.cite_libs.utils_tools.LocationParser;
 import net.craftersland.data.bridge.api.events.SyncCompleteEvent;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -14,7 +15,10 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.type.Stairs;
-import org.bukkit.entity.*;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -162,7 +166,7 @@ public class EventsCite implements Listener {
     }
 
     private void addToClaim(Region region, Block block, Player player) {
-        Connection connection = MainCore.getSQL().getConnection();
+        Connection connection = MainLibs.getSql();
         try {
             Location loc = block.getLocation();
             PreparedStatement q = connection.prepareStatement("UPDATE `" + MainCore.SQLPREFIX + "regions` SET" +
@@ -181,7 +185,7 @@ public class EventsCite implements Listener {
     }
 
     private void removeToClaim(Location loc, Player player) {
-        Connection connection = MainCore.getSQL().getConnection();
+        Connection connection = MainLibs.getSql();
         try {
             Region region = MainClaim.regions.get(MainClaim.regionsBlocks.get(loc));
             PreparedStatement q = connection.prepareStatement("SELECT `rg_locs` FROM `" + MainCore.SQLPREFIX +
@@ -245,7 +249,7 @@ public class EventsCite implements Listener {
             for (Player p : Bukkit.getOnlinePlayers()){
                 if (MainClaim.isBuildMods(p)) {
                     p.sendMessage(MainCore.prefixCmd + "§cAttention ! Il ne faut pas poser de block sur une item frame (Pos:"+
-                            LocToString.getStringLocation(event.getEntity().getLocation()) + ")");
+                            LocationParser.getFullString(event.getEntity().getLocation()) + ")");
                 }
             }
         }
@@ -254,7 +258,7 @@ public class EventsCite implements Listener {
             for (Player p : Bukkit.getOnlinePlayers()){
                 if (MainClaim.isBuildMods(p)) {
                     p.sendMessage(MainCore.prefixCmd + "§cAttention ! Item frame volante : "
-                            + LocToString.getStringLocation(event.getEntity().getLocation()));
+                            + LocationParser.getFullString(event.getEntity().getLocation()));
                 }
             }
         }

@@ -9,6 +9,7 @@ import fr.milekat.cite_claim.engines.RegionsTask;
 import fr.milekat.cite_claim.obj.Region;
 import fr.milekat.cite_claim.utils.RegionsBlocksLoad;
 import fr.milekat.cite_core.MainCore;
+import fr.milekat.cite_libs.MainLibs;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -107,7 +108,7 @@ public class CommandsRegion implements CommandExecutor {
      *      Ajout d'une région dans la base SQL
      */
     private Region addRegion(Player player, String name) throws SQLException {
-        Connection connection = MainCore.getSQL().getConnection();
+        Connection connection = MainLibs.getSql();
         PreparedStatement q = connection.prepareStatement(
                 "INSERT INTO `" + MainCore.SQLPREFIX + "regions`(`rg_name`) VALUES (?) RETURNING `rg_id`;");
         q.setString(1, name);
@@ -231,7 +232,7 @@ public class CommandsRegion implements CommandExecutor {
      *      Update d'un paramètre dans le SQL, si String null, intValue sera utilisé
      */
     private void updateSQLRegion(Region region, String column, String stringValue, Integer intValue) throws SQLException {
-        Connection connection = MainCore.getSQL().getConnection();
+        Connection connection = MainLibs.getSql();
         PreparedStatement q = connection.prepareStatement("UPDATE `" + MainCore.SQLPREFIX +
                 "regions` SET `rg_" + column + "` = ? WHERE `rg_id` = ?;");
         q.setObject(1, stringValue == null ? intValue : stringValue);

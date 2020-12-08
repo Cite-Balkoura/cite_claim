@@ -2,6 +2,7 @@ package fr.milekat.cite_claim.utils;
 
 import fr.milekat.cite_claim.MainClaim;
 import fr.milekat.cite_core.MainCore;
+import fr.milekat.cite_libs.MainLibs;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -14,7 +15,7 @@ public class RegionsBlocksLoad {
      *      Injections des régions dans la hashmap
      */
     public void reloadRegions() {
-        Connection connection = MainCore.getSQL().getConnection();
+        Connection connection = MainLibs.getSql();
         try {
             PreparedStatement q = connection.prepareStatement("SELECT `rg_name`, `rg_locs` FROM `" + MainCore.SQLPREFIX
                     + "regions`;");

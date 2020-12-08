@@ -2,6 +2,7 @@ package fr.milekat.cite_claim.commands;
 
 import fr.milekat.cite_claim.MainClaim;
 import fr.milekat.cite_core.MainCore;
+import fr.milekat.cite_libs.MainLibs;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -32,7 +33,7 @@ public class ModeBuilder implements CommandExecutor {
      * @param mode true/false
      */
     private void setBuildForP(Player p, boolean mode) {
-        Connection connection = MainCore.getSQL().getConnection();
+        Connection connection = MainLibs.getSql();
         try {
             PreparedStatement q = connection.prepareStatement("UPDATE `" + MainCore.SQLPREFIX +
                     "player` SET buildon = ? WHERE `uuid` = ?;");

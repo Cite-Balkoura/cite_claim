@@ -5,7 +5,8 @@ import fr.milekat.cite_claim.events.RegionMarket;
 import fr.milekat.cite_claim.obj.Region;
 import fr.milekat.cite_core.MainCore;
 import fr.milekat.cite_core.core.obj.Team;
-import fr.milekat.cite_libs.utils_tools.LocToString;
+import fr.milekat.cite_libs.MainLibs;
+import fr.milekat.cite_libs.utils_tools.LocationParser;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -29,7 +30,7 @@ public class RegionsTask {
     }
 
     public void updateRegion() {
-        Connection connection = MainCore.getSQL().getConnection();
+        Connection connection = MainLibs.getSql();
         try {
             PreparedStatement q = connection.prepareStatement(
                     "SELECT * FROM `" + MainCore.SQLPREFIX + "regions` ORDER BY `rg_id` ASC;");
@@ -47,9 +48,7 @@ public class RegionsTask {
                 }
                 if (!(q.getResultSet().getString("rg_locs") == null)) {
                     for (String loc : q.getResultSet().getString("rg_locs").split(";")) {
-                        String[] xyz = loc.split(":");
-                        blocks.add(new Location(Bukkit.getServer().getWorld("world"),
-                                Integer.parseInt(xyz[0]),Integer.parseInt(xyz[1]),Integer.parseInt(xyz[2])));
+                        blocks.add(LocationParser.getLocation("world", loc));
                     }
                 }
                 Region region = new Region(q.getResultSet().getInt("rg_id"),
@@ -91,6 +90,6 @@ public class RegionsTask {
     }
 
     private Block getBlock(String location) {
-        return LocToString.getLocationString("world:" + location).getBlock();
+        return LocationParser.getLocation("world", location).getBlock();
     }
 }
