@@ -22,11 +22,11 @@ public class CapitaineFeature implements Listener {
 
     @EventHandler
     public void onBoatCapitaineClick(NPCRightClickEvent event) {
-        String loctype;
+        String loclabel;
         if (event.getNPC().getId()==36) {
-            loctype = "boat";
+            loclabel = "boat";
         } else if (event.getNPC().getId() >= 37 && event.getNPC().getId() <= 42) {
-            loctype = "balloon";
+            loclabel = "balloon";
         } else return;
         FastInv gui = new FastInv(InventoryType.HOPPER, ChatColor.DARK_AQUA + "Choisis ton cap !");
         gui.setItem(0, new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).name(" ").build(), e -> e.setCancelled(true));
@@ -37,7 +37,7 @@ public class CapitaineFeature implements Listener {
                 JedisServer server = MainLibs.jedisServers.get(loop);
                 gui.addItem(new ItemBuilder(server.getMaterial()).name(server.getName()).addLore("Population " + players).build(), e -> {
                     e.setCancelled(true);
-                    new ServersManagerSendPlayer().sendPlayerToServerWithLabel(((Player) e.getWhoClicked()),server.getChannel(),loctype);
+                    new ServersManagerSendPlayer().sendPlayerToServer(((Player) e.getWhoClicked()),server.getChannel(),loclabel);
                 });
             }
         }
