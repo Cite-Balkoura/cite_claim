@@ -37,7 +37,7 @@ public class CapitaineFeature implements Listener {
                 JedisServer server = MainLibs.jedisServers.get(loop);
                 gui.addItem(new ItemBuilder(server.getMaterial()).name(server.getName()).addLore("Population " + players).build(), e -> {
                     e.setCancelled(true);
-                    new ServersManagerSendPlayer().sendPlayerToServer(((Player) e.getWhoClicked()),server.getChannel(),loctype);
+                    new ServersManagerSendPlayer().sendPlayerToServerWithLabel(((Player) e.getWhoClicked()),server.getChannel(),loctype);
                 });
             }
         }
